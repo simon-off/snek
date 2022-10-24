@@ -3,7 +3,7 @@ const map = document.querySelector(".map");
 
 // Global constants
 const gridSquares = 16;
-const gridSize = 20;
+const gridSize = 32;
 const mapSize = gridSquares * gridSize;
 const center = gridSize * (gridSquares / 2);
 
@@ -17,6 +17,7 @@ let gameOver = false;
 map.style.height = mapSize + "px";
 map.style.width = mapSize + "px";
 map.style.setProperty("--grid-size", gridSize + "px");
+map.style.setProperty("--grid-squares", gridSquares);
 
 // update css position function
 function updateCssPos(el, pos) {
@@ -152,21 +153,25 @@ const gameLoop = () => {
 };
 gameLoop();
 
-window.addEventListener("keypress", (e) => {
-  switch (e.key) {
-    case "w":
+window.addEventListener("keydown", (e) => {
+  switch (e.code) {
+    case "KeyW":
+    case "ArrowUp":
       snake.newDir = [0, -1];
       break;
-    case "s":
+    case "KeyS":
+    case "ArrowDown":
       snake.newDir = [0, 1];
       break;
-    case "a":
+    case "KeyA":
+    case "ArrowLeft":
       snake.newDir = [-1, 0];
       break;
-    case "d":
+    case "KeyD":
+    case "ArrowRight":
       snake.newDir = [1, 0];
       break;
-    case " ":
+    case "Space":
       if (gameOver) {
         restart();
       }
