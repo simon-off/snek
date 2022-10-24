@@ -14,38 +14,24 @@ body {
 }
 
 body {
-  display: grid;
-  place-items: center;
-  shape-rendering: crisp-edges;
-}
-
-main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.map {
+  /* Custom properties set with js */
   --grid-size: 0px;
   --grid-squares: 0;
   --game-speed: 0ms;
   --grid-opacity: 0.1;
 
+  display: grid;
+  place-items: center;
+  shape-rendering: crisp-edges;
+}
+
+/* Game objects */
+.map {
   outline: 1px solid black;
   background-image: linear-gradient(rgba(0, 0, 0, 0) 96%, rgba(0, 0, 0, var(--grid-opacity)) 96%),
     linear-gradient(90deg, rgba(0, 0, 0, 0) 96%, rgba(0, 0, 0, var(--grid-opacity)) 96%);
   background-size: var(--grid-size) var(--grid-size);
   position: relative;
-}
-
-.restart {
-  position: relative;
-  top: calc(var(--grid-size) * (var(--grid-squares) / 2) - var(--grid-size) * 2);
-  height: calc(var(--grid-size) * 4);
-  z-index: 2;
-  background-color: black;
-  color: white;
 }
 
 .snake {
@@ -54,8 +40,6 @@ main {
   width: var(--grid-size);
   height: var(--grid-size);
   z-index: 1;
-
-  transition: calc(var(--game-speed) * 0.25) ease-in-out;
 }
 
 .apple {
@@ -64,6 +48,27 @@ main {
   border-radius: calc(var(--grid-size) / 3);
   width: var(--grid-size);
   height: var(--grid-size);
+}
+
+/* UI elements */
+.info {
+  line-height: 0.75;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  padding-block: calc(var(--grid-size) / 4);
+}
+
+.restart {
+  position: relative;
+  height: calc(var(--grid-size) * var(--grid-squares));
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.75);
+  color: white;
 }
 
 /* Utility Classes */

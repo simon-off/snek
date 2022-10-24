@@ -1,5 +1,8 @@
 // Queries
-const map = document.querySelector(".map");
+const bodyEl = document.querySelector("body");
+const mapEl = document.querySelector(".map");
+const scoreEl = document.querySelector(".score");
+const restartEl = document.querySelector(".restart");
 
 // Global constants
 const gridSquares = 16;
@@ -10,14 +13,23 @@ const center = gridSize * (gridSquares / 2);
 // Game update speed in ms
 const gameSpeed = 100;
 
-// Game over state
+// Global lets
 let gameOver = false;
+let score = 0;
+const changeScore = (points) => {
+  if (points === 0) {
+    score = 0;
+  } else {
+    score += points;
+  }
+  scoreEl.textContent = `score: ${score}`;
+};
 
-// Map style
-map.style.height = mapSize + "px";
-map.style.width = mapSize + "px";
-map.style.setProperty("--grid-size", gridSize + "px");
-map.style.setProperty("--grid-squares", gridSquares);
+// mapEl style
+mapEl.style.height = mapSize + "px";
+mapEl.style.width = mapSize + "px";
+bodyEl.style.setProperty("--grid-size", gridSize + "px");
+bodyEl.style.setProperty("--grid-squares", gridSquares);
 
 // update css position function
 function updateCssPos(el, pos) {
@@ -67,6 +79,7 @@ const snake = {
     // Loop to check if i'm colliding with myself
     for (let piece of this.tail) {
       if (this.pos[0] === piece.pos[0] && this.pos[1] === piece.pos[1]) {
+        restartEl.classList.remove("hidden");
         gameOver = true;
       }
     }
@@ -88,7 +101,7 @@ const snake = {
     tailPiece.oldPos = [];
     tailPiece.markup = document.createElement("div");
     tailPiece.markup.classList.add("snake", "tail");
-    map.append(tailPiece.markup);
+    mapEl.append(tailPiece.markup);
     this.tail.push(tailPiece);
   },
 
@@ -96,6 +109,7 @@ const snake = {
     if (this.pos[0] === apple.pos[0] && this.pos[1] === apple.pos[1]) {
       apple.move();
       this.grow();
+      changeScore(1);
     }
   },
 };
@@ -127,18 +141,20 @@ const apple = {
 };
 
 function restart() {
+  changeScore(0);
+  restartEl.classList.add("hidden");
   snake.pos = [center, center];
   updateCssPos(snake.markup, snake.pos);
-  snake.tail.splice(0, snake.tail.length);
-  document.querySelectorAll(".tail").forEach((el) => map.removeChild(el));
+  snake.tail = [];
+  document.querySelectorAll(".tail").forEach((el) => mapEl.removeChild(el));
+  snake.dir = [0, 0];
+  snake.newDir = [0, 0];
   gameOver = false;
-  snake.dir[0] = 0;
-  snake.dir[1] = 0;
   gameLoop();
 }
 
-map.append(snake.init());
-map.append(apple.create());
+mapEl.append(snake.init());
+mapEl.append(apple.create());
 
 // Game loop
 const gameLoop = () => {
@@ -153,6 +169,7 @@ const gameLoop = () => {
 };
 gameLoop();
 
+// Controls
 window.addEventListener("keydown", (e) => {
   switch (e.code) {
     case "KeyW":
