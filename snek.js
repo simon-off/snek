@@ -1,19 +1,22 @@
-// Queries
+//===============================================//
+//+++ QUERIES +++||------------------------------//
+//===============================================//
+
 const bodyEl = document.querySelector("body");
 const mapEl = document.querySelector(".map");
 const scoreEl = document.querySelector(".score");
 const restartEl = document.querySelector(".restart");
 
-// Global constants
+//===============================================//
+//+++ GLOBAL VARIABLES +++||---------------------//
+//===============================================//
+
 const gridSquares = 16;
 const gridSize = 32;
 const mapSize = gridSquares * gridSize;
 const center = gridSize * (gridSquares / 2);
-
-// Game update speed in ms
 const gameSpeed = 100;
 
-// Global lets
 let gameOver = false;
 let score = 0;
 const changeScore = (points) => {
@@ -32,34 +35,32 @@ bodyEl.style.setProperty("--grid-size", gridSize + "px");
 bodyEl.style.setProperty("--grid-squares", gridSquares);
 
 // update css position function
-function updateCssPos(el, pos) {
-  el.style.left = pos[0] + "px";
-  el.style.top = pos[1] + "px";
+function updateCssPos(obj) {
+  obj.markup.style.left = obj.pos[0] + "px";
+  obj.markup.style.top = obj.pos[1] + "px";
 }
 
-// Snake stuff!
+//===============================================//
+//+++ SNAKE +++||--------------------------------//
+//===============================================//
+
 const snake = {
   pos: [center, center],
   oldPos: [],
   dir: [0, 0],
-  newDir: [0, 0],
   tail: [],
+  markup: null,
 
   init: function () {
-    const markup = document.createElement("div");
-    markup.classList.add("snake", "head");
-    this.markup = markup;
+    this.markup = document.createElement("div");
+    this.markup.classList.add("snake", "head");
     return this.markup;
   },
 
-  changeDir: function () {
-    if (this.dir[0] === 0 && this.dir[1] === 0) {
-      this.dir = this.newDir;
-      return;
-    }
-    if (this.newDir[0] === this.dir[0] * -1) return;
-    if (this.newDir[1] === this.dir[1] * -1) return;
-    this.dir = this.newDir;
+  changeDir: function (newDir) {
+    if (newDir[0] === this.dir[0] * -1 && this.dir[0] !== 0) return;
+    if (newDir[1] === this.dir[1] * -1 && this.dir[1] !== 0) return;
+    this.dir = newDir;
   },
 
   move: function () {
@@ -74,7 +75,7 @@ const snake = {
     if (this.pos[1] >= mapSize || this.pos[1] < 0) {
       this.pos[1] += this.dir[1] * mapSize * -1;
     }
-    updateCssPos(this.markup, this.pos);
+    updateCssPos(this);
 
     // Loop to check if i'm colliding with myself
     for (let piece of this.tail) {
@@ -87,11 +88,11 @@ const snake = {
     // Loop to move the tail
     for (let i = this.tail.length - 1; i > 0; i--) {
       this.tail[i].pos = [...this.tail[i - 1].pos];
-      updateCssPos(this.tail[i].markup, this.tail[i].pos);
+      updateCssPos(this.tail[i]);
     }
     if (this.tail.length > 0) {
       this.tail[0].pos = this.oldPos;
-      updateCssPos(this.tail[0].markup, this.tail[0].pos);
+      updateCssPos(this.tail[0]);
     }
   },
 
@@ -114,6 +115,10 @@ const snake = {
   },
 };
 
+//===============================================//
+//+++ APPLE +++||--------------------------------//
+//===============================================//
+
 const apple = {
   pos: [center, center],
   create: function () {
@@ -127,7 +132,7 @@ const apple = {
     this.pos[0] = Math.floor(Math.random() * gridSquares) * gridSize;
     this.pos[1] = Math.floor(Math.random() * gridSquares) * gridSize;
 
-    for (piece of snake.tail) {
+    for (let piece of snake.tail) {
       if (
         (this.pos[0] === piece.pos[0] && this.pos[1] === piece.pos[1]) ||
         (this.pos[0] === snake.pos[0] && this.pos[1] === snake.pos[1])
@@ -136,7 +141,7 @@ const apple = {
       }
     }
 
-    updateCssPos(this.markup, this.pos);
+    updateCssPos(this);
   },
 };
 
@@ -144,11 +149,10 @@ function restart() {
   changeScore(0);
   restartEl.classList.add("hidden");
   snake.pos = [center, center];
-  updateCssPos(snake.markup, snake.pos);
+  updateCssPos(snake);
   snake.tail = [];
   document.querySelectorAll(".tail").forEach((el) => mapEl.removeChild(el));
   snake.dir = [0, 0];
-  snake.newDir = [0, 0];
   gameOver = false;
   gameLoop();
 }
@@ -156,10 +160,12 @@ function restart() {
 mapEl.append(snake.init());
 mapEl.append(apple.create());
 
-// Game loop
+//===============================================//
+//+++ GAME LOOP +++||----------------------------//
+//===============================================//
+
 const gameLoop = () => {
   if (!gameOver) {
-    snake.changeDir();
     snake.move();
 
     setTimeout(() => {
@@ -169,24 +175,27 @@ const gameLoop = () => {
 };
 gameLoop();
 
-// Controls
+//===============================================//
+//+++ CONTROLS +++||-----------------------------//
+//===============================================//
+
 window.addEventListener("keydown", (e) => {
   switch (e.code) {
     case "KeyW":
     case "ArrowUp":
-      snake.newDir = [0, -1];
+      snake.changeDir([0, -1]);
       break;
     case "KeyS":
     case "ArrowDown":
-      snake.newDir = [0, 1];
+      snake.changeDir([0, 1]);
       break;
     case "KeyA":
     case "ArrowLeft":
-      snake.newDir = [-1, 0];
+      snake.changeDir([-1, 0]);
       break;
     case "KeyD":
     case "ArrowRight":
-      snake.newDir = [1, 0];
+      snake.changeDir([1, 0]);
       break;
     case "Space":
       if (gameOver) {

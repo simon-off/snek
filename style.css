@@ -18,7 +18,7 @@ body {
   --grid-size: 0px;
   --grid-squares: 0;
   --game-speed: 0ms;
-  --grid-opacity: 0.1;
+  --grid-opacity: 0.05;
 
   display: grid;
   place-items: center;
@@ -28,8 +28,8 @@ body {
 /* Game objects */
 .map {
   outline: 1px solid black;
-  background-image: linear-gradient(rgba(0, 0, 0, 0) 96%, rgba(0, 0, 0, var(--grid-opacity)) 96%),
-    linear-gradient(90deg, rgba(0, 0, 0, 0) 96%, rgba(0, 0, 0, var(--grid-opacity)) 96%);
+  background-image: linear-gradient(rgba(0 0 0 / 0) 96%, rgba(0 0 0 / var(--grid-opacity)) 96%),
+    linear-gradient(90deg, rgba(0 0 0 / 0) 96%, rgba(0 0 0 / var(--grid-opacity)) 96%);
   background-size: var(--grid-size) var(--grid-size);
   position: relative;
 }
@@ -67,7 +67,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: rgba(0 0 0 / 0.75);
   color: white;
 }
 
