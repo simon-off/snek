@@ -34,12 +34,6 @@ mapEl.style.width = mapSize + "px";
 bodyEl.style.setProperty("--grid-size", gridSize + "px");
 bodyEl.style.setProperty("--grid-squares", gridSquares);
 
-// update css position function
-function updateCssPos(obj) {
-  obj.markup.style.left = obj.pos[0] + "px";
-  obj.markup.style.top = obj.pos[1] + "px";
-}
-
 //===============================================//
 //+++ SNAKE +++||--------------------------------//
 //===============================================//
@@ -67,6 +61,7 @@ const snake = {
     this.eat();
     this.oldPos = [...this.pos];
 
+    // Step in current direction. Wrap around if out of bounds.
     this.pos[0] += this.dir[0] * gridSize;
     if (this.pos[0] >= mapSize || this.pos[0] < 0) {
       this.pos[0] += this.dir[0] * mapSize * -1;
@@ -77,7 +72,7 @@ const snake = {
     }
     updateCssPos(this);
 
-    // Loop to check if i'm colliding with myself
+    // Loop to check if i'm colliding with myself.
     for (let piece of this.tail) {
       if (this.pos[0] === piece.pos[0] && this.pos[1] === piece.pos[1]) {
         restartEl.classList.remove("hidden");
@@ -85,7 +80,7 @@ const snake = {
       }
     }
 
-    // Loop to move the tail
+    // Loop to move the tail.
     for (let i = this.tail.length - 1; i > 0; i--) {
       this.tail[i].pos = [...this.tail[i - 1].pos];
       updateCssPos(this.tail[i]);
@@ -121,13 +116,15 @@ const snake = {
 
 const apple = {
   pos: [center, center],
-  create: function () {
-    const markup = document.createElement("div");
-    markup.classList.add("apple");
-    this.markup = markup;
+
+  init: function () {
+    this.markup = document.createElement("div");
+    this.markup.classList.add("apple");
+    // this.markup = markup;
     this.move();
     return this.markup;
   },
+
   move: function () {
     this.pos[0] = Math.floor(Math.random() * gridSquares) * gridSize;
     this.pos[1] = Math.floor(Math.random() * gridSquares) * gridSize;
@@ -145,6 +142,15 @@ const apple = {
   },
 };
 
+//===============================================//
+//+++ COMMON FUNCTIONS +++||---------------------//
+//===============================================//
+
+function updateCssPos(obj) {
+  obj.markup.style.left = obj.pos[0] + "px";
+  obj.markup.style.top = obj.pos[1] + "px";
+}
+
 function restart() {
   changeScore(0);
   restartEl.classList.add("hidden");
@@ -158,7 +164,7 @@ function restart() {
 }
 
 mapEl.append(snake.init());
-mapEl.append(apple.create());
+mapEl.append(apple.init());
 
 //===============================================//
 //+++ GAME LOOP +++||----------------------------//
