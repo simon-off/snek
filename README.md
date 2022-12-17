@@ -9,6 +9,6 @@ It's DIVs all the way down! 🟩
 
 ### **"Gameplay:"** 👀
 
-<img src="gameplay.gif" alt="Gameplay gif of snek" width="400"/>
+<img src="gameplay.gif" alt="Gameplay gif of snek" width=600/>
 
 by: [simon](https://github.com/simon-off/)
