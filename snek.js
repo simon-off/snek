@@ -5,6 +5,7 @@
 const bodyEl = document.querySelector("body");
 const mapEl = document.querySelector(".map");
 const scoreEl = document.querySelector(".score");
+const highScoreEl = document.querySelector(".high-score");
 const restartEl = document.querySelector(".restart");
 
 //===============================================//
@@ -19,12 +20,18 @@ const gameSpeed = 100;
 
 let gameOver = false;
 let score = 0;
+let highScore = JSON.parse(localStorage.getItem("highScore")) ?? 0;
 const changeScore = (points) => {
   if (points === 0) {
     score = 0;
   } else {
     score += points;
+    if (score > highScore) {
+      highScore = score;
+      localStorage.setItem("highScore", JSON.stringify(highScore));
+    }
   }
+  highScoreEl.textContent = `high score: ${highScore}`;
   scoreEl.textContent = `score: ${score}`;
 };
 
@@ -39,13 +46,13 @@ bodyEl.style.setProperty("--grid-squares", gridSquares);
 //===============================================//
 
 const snake = {
-  pos: [center, center],
-  oldPos: [],
-  dir: [0, 0],
-  tail: [],
-  markup: null,
-
   init: function () {
+    this.pos = [center, center];
+    this.oldPos = [];
+    this.dir = [0, 0];
+    this.nextDir = [0, 0];
+    this.tail = [];
+    this.markup = null;
     this.markup = document.createElement("div");
     this.markup.classList.add("snake", "head");
     return this.markup;
@@ -54,11 +61,12 @@ const snake = {
   changeDir: function (newDir) {
     if (newDir[0] === this.dir[0] * -1 && this.dir[0] !== 0) return;
     if (newDir[1] === this.dir[1] * -1 && this.dir[1] !== 0) return;
-    this.dir = newDir;
+    this.nextDir = newDir;
   },
 
   move: function () {
     this.eat();
+    this.dir = this.nextDir;
     this.oldPos = [...this.pos];
 
     // Step in current direction. Wrap around if out of bounds.
@@ -92,10 +100,11 @@ const snake = {
   },
 
   grow: function () {
-    const tailPiece = {};
-    tailPiece.pos = [];
-    tailPiece.oldPos = [];
-    tailPiece.markup = document.createElement("div");
+    const tailPiece = {
+      pos: [],
+      oldPos: [],
+      markup: document.createElement("div"),
+    };
     tailPiece.markup.classList.add("snake", "tail");
     mapEl.append(tailPiece.markup);
     this.tail.push(tailPiece);
@@ -120,7 +129,6 @@ const apple = {
   init: function () {
     this.markup = document.createElement("div");
     this.markup.classList.add("apple");
-    // this.markup = markup;
     this.move();
     return this.markup;
   },
@@ -129,6 +137,7 @@ const apple = {
     this.pos[0] = Math.floor(Math.random() * gridSquares) * gridSize;
     this.pos[1] = Math.floor(Math.random() * gridSquares) * gridSize;
 
+    // Make sure the apple doesn't spawn in the snake
     for (let piece of snake.tail) {
       if (
         (this.pos[0] === piece.pos[0] && this.pos[1] === piece.pos[1]) ||
@@ -154,17 +163,17 @@ function updateCssPos(obj) {
 function restart() {
   changeScore(0);
   restartEl.classList.add("hidden");
-  snake.pos = [center, center];
-  updateCssPos(snake);
-  snake.tail = [];
-  document.querySelectorAll(".tail").forEach((el) => mapEl.removeChild(el));
-  snake.dir = [0, 0];
+
+  const snakeEls = document.querySelectorAll(".snake");
+  if (snakeEls.length > 0) snakeEls.forEach((el) => mapEl.removeChild(el));
+  const applesEls = document.querySelectorAll(".apple");
+  if (applesEls.length > 0) applesEls.forEach((el) => mapEl.removeChild(el));
+
+  mapEl.append(snake.init());
+  mapEl.append(apple.init());
   gameOver = false;
   gameLoop();
 }
-
-mapEl.append(snake.init());
-mapEl.append(apple.init());
 
 //===============================================//
 //+++ GAME LOOP +++||----------------------------//
@@ -179,7 +188,7 @@ const gameLoop = () => {
     }, gameSpeed);
   }
 };
-gameLoop();
+restart();
 
 //===============================================//
 //+++ CONTROLS +++||-----------------------------//

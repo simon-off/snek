@@ -17,7 +17,6 @@ body {
   /* Custom properties set with js */
   --grid-size: 0px;
   --grid-squares: 0;
-  --game-speed: 0ms;
   --grid-opacity: 0.05;
 
   display: grid;
@@ -44,7 +43,7 @@ body {
 
 .apple {
   position: absolute;
-  background-color: rgb(70, 140, 20);
+  background-color: hsl(120, 50%, 50%);
   border-radius: calc(var(--grid-size) / 3);
   width: var(--grid-size);
   height: var(--grid-size);
