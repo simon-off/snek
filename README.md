@@ -2,7 +2,7 @@
 
 Super simple snake game made with HTML, CSS & JavaScript.
 
-Preview on Netlify: [snek2000.netlify.app](https://snek2000.netlify.app/)
+[snek.simonoff.se/](https://snek.simonoff.se/)
 
 ---
 
